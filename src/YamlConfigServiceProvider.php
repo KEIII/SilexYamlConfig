@@ -3,8 +3,8 @@
 namespace KEIII\YamlConfigServiceProvider;
 
 use KEIII\YamlConfig\Factory;
-use Pimple\Container;
-use Pimple\ServiceProviderInterface;
+use Silex\ServiceProviderInterface;
+use Silex\Application as Container;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
 /**
@@ -21,15 +21,15 @@ class YamlConfigServiceProvider implements ServiceProviderInterface
 
         $pimple['config.replacements'] = [];
 
-        $pimple['config.env'] = function (Container $pimple) {
+        $pimple['config.env'] = $pimple::share(function (Container $pimple) {
             return $pimple->offsetExists('env') ? $pimple['env'] : 'dev';
-        };
+        });
 
-        $pimple['config.index'] = function (Container $pimple) {
+        $pimple['config.index'] = $pimple::share(function (Container $pimple) {
             return sprintf('config.%s.yml', $pimple['config.env']);
-        };
+        });
 
-        $pimple['config.loader'] = function (Container $pimple) {
+        $pimple['config.loader'] = $pimple::share(function (Container $pimple) {
             return Factory::create(
                 $pimple['config.path'],
                 array_replace([
@@ -37,13 +37,21 @@ class YamlConfigServiceProvider implements ServiceProviderInterface
                 ], $pimple['config.replacements']),
                 $pimple['config.cache_path']
             );
-        };
+        });
 
-        $pimple['config'] = function (Container $pimple) {
+        $pimple['config'] = $pimple::share(function (Container $pimple) {
             /** @var LoaderInterface $loader */
             $loader = $pimple['config.loader'];
 
             return $loader->load($pimple['config.index']);
-        };
+        });
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function boot(Container $app)
+    {
+        // required by interface
     }
 }
