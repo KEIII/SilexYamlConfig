@@ -21,13 +21,11 @@ class YamlConfigServiceProvider implements ServiceProviderInterface
 
         $pimple['config.replacements'] = [];
 
-        $pimple['config.env'] = function (Container $pimple) {
-            return $pimple->offsetExists('env') ? $pimple['env'] : 'dev';
-        };
+        $pimple['config.debug'] = $pimple->offsetExists('debug') ? $pimple['debug'] : false;
 
-        $pimple['config.index'] = function (Container $pimple) {
-            return sprintf('config.%s.yml', $pimple['config.env']);
-        };
+        $pimple['config.env'] = $pimple->offsetExists('env') ? $pimple['env'] : 'dev';
+
+        $pimple['config.index'] = sprintf('config.%s.yml', $pimple['config.env']);
 
         $pimple['config.loader'] = function (Container $pimple) {
             return Factory::create(
@@ -35,7 +33,8 @@ class YamlConfigServiceProvider implements ServiceProviderInterface
                 array_replace([
                     'env' => $pimple['config.env'],
                 ], $pimple['config.replacements']),
-                $pimple['config.cache_path']
+                $pimple['config.cache_path'],
+                $pimple['config.debug']
             );
         };
 
