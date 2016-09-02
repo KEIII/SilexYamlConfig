@@ -3,9 +3,9 @@
 namespace KEIII\YamlConfigServiceProvider;
 
 use KEIII\YamlConfig\Factory;
+use KEIII\YamlConfig\SimpleLoaderInterface;
 use Silex\ServiceProviderInterface;
 use Silex\Application as Container;
-use Symfony\Component\Config\Loader\LoaderInterface;
 
 /**
  * Provides YAML config.
@@ -39,7 +39,7 @@ class YamlConfigServiceProvider implements ServiceProviderInterface
         });
 
         $pimple['config'] = $pimple::share(function (Container $pimple) {
-            /** @var LoaderInterface $loader */
+            /** @var SimpleLoaderInterface $loader */
             $loader = $pimple['config.loader'];
 
             return $loader->load($pimple['config.index']);
