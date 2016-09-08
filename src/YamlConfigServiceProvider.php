@@ -25,7 +25,7 @@ class YamlConfigServiceProvider implements ServiceProviderInterface
 
         $pimple['config.env'] = $pimple->offsetExists('env') ? $pimple['env'] : 'dev';
 
-        $pimple['config.index'] = sprintf('config.%s.yml', $pimple['config.env']);
+        $pimple['config.index'] = sprintf('config_%s.yml', $pimple['config.env']);
 
         $pimple['config.loader'] = $pimple::share(function (Container $pimple) {
             return Factory::create(
